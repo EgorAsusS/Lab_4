@@ -9,9 +9,9 @@ bool decompress(char* filepath, char* filepath_new);
 
 int main() {
     bool flag = true;
-    flag = compress("data.txt", "encrypt.txt");
+    flag = compress("data.txt", "compress.txt");
     if (flag){
-        flag = decompress("encrypt.txt", "data_2.txt");
+        flag = decompress("compress.txt", "decompress.txt");
         if (flag){
             printf("Good compress and decompress\n");
         }
