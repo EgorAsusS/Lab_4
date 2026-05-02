@@ -36,38 +36,46 @@ bool compress(char* filepath, char* filepath_new) {
         int flag = 0;
         unsigned char mask = 1;
         if (file_new) {
-            while (flag != EOF) {
+            while (flag >= 0) {
                 mask = 1;
                 ix = 0;
                 _el = 0;
-                while (ix < 8 && flag != EOF) {
+                while (ix < 8 && flag >= 0) {
                     flag = fscanf(file, "%c", &el[ix]);
+                    if ((unsigned char)el[ix] > 127) {
+                        flag = -2;
+                        continue;
+                    }
                     if (flag != EOF) {
                         ix++;
                     }
                 }
-                if (ix < 8) {
-                    for (int i = 0; i < ix; i++) {
-                        if(fprintf(file_new, "%c", el[i]) < 0){
-                            fclose(file_new);
-                            fclose(file);
-                            return 0;
+                if (flag != -2) {
+                    if (ix < 8) {
+                        for (int i = 0; i < ix; i++) {
+                            if (fprintf(file_new, "%c", el[i]) < 0) {
+                                flag = -2;
+                                i = ix;
+                            }
                         }
                     }
-                }
-                else {
-                    for (int i = 1, j = 7; i < 8; i++, j--) {
-                        _el = ((mask & el[0]) << j) | el[i];
-                        mask = mask << 1;
-                        if(fprintf(file_new, "%c", _el) < 0){
-                            fclose(file_new);
-                            fclose(file);
-                            return 0;
+                    else {
+                        for (int i = 1, j = 7; i < 8; i++, j--) {
+                            _el = ((mask & el[0]) << j) | el[i];
+                            mask = mask << 1;
+                            if (fprintf(file_new, "%c", _el) < 0) {
+                                flag = -2;
+                                i = ix;
+                            }
                         }
                     }
                 }
             }
             fclose(file_new);
+            if (flag == -2) {
+                remove(filepath_new);
+                return 0;
+            }
             fclose(file);
             return 1;
         }
@@ -106,9 +114,8 @@ bool decompress(char* filepath, char* filepath_new) {
                 if (ix < 7 || flag_end) {
                     for (int i = 0; i < ix; i++) {
                         if(fprintf(file_new, "%c", el[i]) < 0){
-                            fclose(file_new);
-                            fclose(file);
-                            return 0;
+                            flag = -2;
+                            i = ix;
                         }
                     }
                 }
@@ -118,20 +125,23 @@ bool decompress(char* filepath, char* filepath_new) {
                         el[i] = el[i] & _mask;
                     }
                     if(fprintf(file_new, "%c", _el) < 0){
-                        fclose(file_new);
-                        fclose(file);
-                        return 0;
+                        flag = -2;
                     }
-                    for (int i = 0; i < 7; i++) {
-                        if(fprintf(file_new, "%c", el[i]) < 0){
-                            fclose(file_new);
-                            fclose(file);
-                            return 0;
+                    if (flag != -2) {
+                        for (int i = 0; i < 7; i++) {
+                            if (fprintf(file_new, "%c", el[i]) < 0) {
+                                flag = -2;
+                                i = 7;
+                            }
                         }
                     }
                 }
             }
             fclose(file_new);
+            if (flag == -2) {
+                remove(filepath_new);
+                return 0;
+            }
             fclose(file);
             return 1;
 
