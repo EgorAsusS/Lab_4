@@ -8,6 +8,16 @@ bool compress(char* filepath, char* filepath_new);
 bool decompress(char* filepath, char* filepath_new);
 
 int main() {
+    //FILE* f = fopen("data.txt", "w");
+    //for (size_t i = 1; i < 128; i++) {
+    //    if (i == 26) {
+    //        continue;
+    //    }
+    //    fprintf(f, "%c", i);
+    //}
+    //fclose(f);
+    //f = NULL;
+
     bool flag = true;
     flag = compress("data.txt", "compress.txt");
     if (flag){
@@ -42,7 +52,7 @@ bool compress(char* filepath, char* filepath_new) {
                 _el = 0;
                 while (ix < 8 && flag >= 0) {
                     flag = fscanf(file, "%c", &el[ix]);
-                    if ((unsigned char)el[ix] > 127) {
+                    if ((unsigned char)el[ix] > 127 || (unsigned char)el[ix] == 0) {
                         flag = -2;
                         continue;
                     }
