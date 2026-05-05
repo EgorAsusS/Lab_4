@@ -31,7 +31,7 @@ int main() {
     //fclose(f);
     //f = NULL;
 
-    bool flag = true;
+    int flag = 0;
     flag = compress("data.txt", "compress.txt");
     if (flag == 1){
         flag = decompress("compress.txt", "decompress.txt");
