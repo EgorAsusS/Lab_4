@@ -58,7 +58,7 @@ int compress(char* filepath, char* filepath_new) {
             int ix = 0;
             char _el = 0;
             int flag = 0;
-            int status = 0;
+            int status = 1;
             char flag_tail = '0';
             unsigned char mask = 1;
             if (file_new) {
@@ -119,7 +119,7 @@ int compress(char* filepath, char* filepath_new) {
                 if (fclose(file)) {
                     status = -1;
                 }
-                return 1;
+                return status;
             }
         }
     }
@@ -138,7 +138,7 @@ int decompress(char* filepath, char* filepath_new) {
             char flag_end = 1;
             char flag_tail = '0';
             int flag = 0;
-            int status = 0;
+            int status = 1;
             unsigned char mask = 0;
             unsigned char _mask = 0;
             if (file_new) {
@@ -204,7 +204,7 @@ int decompress(char* filepath, char* filepath_new) {
                 if (fclose(file)) {
                     status = -1;
                 }
-                return 1;
+                return status;
             }
         }
     }
