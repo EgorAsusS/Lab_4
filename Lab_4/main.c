@@ -8,8 +8,18 @@ int compress(char* filepath, char* filepath_new);
 int decompress(char* filepath, char* filepath_new);
 
 int main() {
-    fopen(NULL, "r");
-
+    FILE* f = fopen("data.txt", "w");
+    for (size_t j = 0; j < 10; j++) {
+        for (size_t i = 0; i < 8; i++) {
+            fprintf(f, "%c", i);
+        }
+    }
+    for (size_t i = 1; i < 8; i++) {
+        fprintf(f, "%c", i);
+    }
+    fclose(f);
+    f = NULL;
+    
     //FILE* f = fopen("data.txt", "w");
     //for (size_t i = 0; i < 128; i++) {
     //for (size_t i = 1; i < 128; i++) {
@@ -49,8 +59,12 @@ int compress(char* filepath, char* filepath_new) {
             char _el = 0;
             int flag = 0;
             int status = 0;
+            char flag_tail = '0';
             unsigned char mask = 1;
             if (file_new) {
+                if (fprintf(file_new, "%c", flag_tail) < 0) {
+                    flag = -2;
+                }
                 while (flag >= 0) {
                     mask = 1;
                     ix = 0;
@@ -58,32 +72,39 @@ int compress(char* filepath, char* filepath_new) {
                     while (ix < 8 && flag >= 0) {
                         flag = fscanf(file, "%c", &el[ix]);
                         if (flag != EOF) {
-                            if ((unsigned char)el[ix] > 127 || (unsigned char)el[ix] == 0) {
+                            if ((unsigned char)el[ix] > 127) {
                                 flag = -2;
                                 continue;
                             }
                             ix++;
                         }
                     }
-                    if (flag != -2) {
-                        if (ix < 8) {
-                            for (int i = 0; i < ix; i++) {
-                                if (fprintf(file_new, "%c", el[i]) < 0) {
-                                    flag = -2;
-                                    i = ix;
-                                }
+                    if (ix < 8) {
+                        flag_tail = '1';
+                        for (int i = 0; i < ix; i++) {
+                            if (fprintf(file_new, "%c", el[i]) < 0) {
+                                flag = -2;
+                                i = ix;
                             }
                         }
-                        else {
-                            for (int i = 1, j = 7; i < 8; i++, j--) {
-                                _el = ((mask & el[0]) << j) | el[i];
-                                mask = mask << 1;
-                                if (fprintf(file_new, "%c", _el) < 0) {
-                                    flag = -2;
-                                    i = ix;
-                                }
+                    }
+                    else {
+                        for (int i = 1, j = 7; i < 8; i++, j--) {
+                            _el = ((mask & el[0]) << j) | el[i];
+                            mask = mask << 1;
+                            if (fprintf(file_new, "%c", _el) < 0) {
+                                flag = -2;
+                                i = ix;
                             }
                         }
+                    }
+                }
+                if (flag_tail == '1') {
+                    if (fseek(file_new, 0, SEEK_SET)) {
+                        flag = -2;
+                    }
+                    else if (fprintf(file_new, "%c", flag_tail) < 0) {
+                        flag = -2;
                     }
                 }
                 if (fclose(file_new)) {
@@ -114,12 +135,14 @@ int decompress(char* filepath, char* filepath_new) {
             char el[7] = { 0 };
             int ix = 0;
             char _el = 0;
-            bool flag_end = 1;
+            char flag_end = 1;
+            char flag_tail = '0';
             int flag = 0;
             int status = 0;
             unsigned char mask = 0;
             unsigned char _mask = 0;
             if (file_new) {
+                flag = fscanf(file, "%c", &flag_tail);
                 while (flag != EOF) {
                     mask = 128;
                     _mask = ~mask;
@@ -135,15 +158,23 @@ int decompress(char* filepath, char* filepath_new) {
                             ix++;
                         }
                     }
-                    if (ix < 7 || flag_end) {
-                        for (int i = 0; i < ix; i++) {
-                            if (fprintf(file_new, "%c", el[i]) < 0) {
+                    if (flag != EOF) {
+                        if (flag_end && flag_tail == '1') {
+                            flag = fscanf(file, "%c", &_el);
+                            if (fseek(file, -1, SEEK_CUR)) {
                                 flag = -2;
-                                i = ix;
+                            }
+                            _el = 0;
+                            if (flag == EOF) {
+                                for (int i = 0; i < ix; i++) {
+                                    if (fprintf(file_new, "%c", el[i]) < 0) {
+                                        flag = -2;
+                                        i = ix;
+                                    }
+                                }
+                                continue;
                             }
                         }
-                    }
-                    else {
                         for (int i = 0, j = 7; i < 7; i++, j--) {
                             _el = ((mask & el[i]) >> j) | _el;
                             el[i] = el[i] & _mask;
