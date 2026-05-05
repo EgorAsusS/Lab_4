@@ -8,24 +8,24 @@ int compress(char* filepath, char* filepath_new);
 int decompress(char* filepath, char* filepath_new);
 
 int main() {
-    FILE* f = fopen("data.txt", "w");
-    for (size_t j = 0; j < 10; j++) {
-        for (size_t i = 0; i < 8; i++) {
-            fprintf(f, "%c", i);
-        }
-    }
-    for (size_t i = 1; i < 8; i++) {
-        fprintf(f, "%c", i);
-    }
-    fclose(f);
-    f = NULL;
+    //FILE* f = fopen("data.txt", "w");
+    //for (size_t j = 0; j < 10; j++) {
+    //    for (size_t i = 0; i < 8; i++) {
+    //        fprintf(f, "%c", i);
+    //    }
+    //}
+    //for (size_t i = 1; i < 8; i++) {
+    //    fprintf(f, "%c", i);
+    //}
+    //fclose(f);
+    //f = NULL;
     
     //FILE* f = fopen("data.txt", "w");
     //for (size_t i = 0; i < 128; i++) {
     //for (size_t i = 1; i < 128; i++) {
-        //if (i == 26) {
-        //    continue;
-        //}
+    //    if (i == 26) {
+    //        continue;
+    //    }
     //    fprintf(f, "%c", i);
     //}
     //fclose(f);
@@ -158,7 +158,7 @@ int decompress(char* filepath, char* filepath_new) {
                             ix++;
                         }
                     }
-                    if (flag != EOF) {
+                    if (flag != EOF || ix < 7) {
                         if (flag_end && flag_tail == '1') {
                             flag = fscanf(file, "%c", &_el);
                             if (fseek(file, -1, SEEK_CUR)) {
