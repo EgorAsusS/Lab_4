@@ -10,12 +10,12 @@ int decompress(char* filepath, char* filepath_new);
 int main() {
     // Тесты на нули
     //FILE* f = fopen("data.txt", "w");
-    //for (size_t j = 0; j < 2; j++) {
+    //for (size_t j = 0; j < 1; j++) {
     //    for (size_t i = 0; i < 8; i++) {
     //        fprintf(f, "%c", i);
     //    }
     //}
-    //for (size_t i = 1; i < 8; i++) {
+    //for (size_t i = 0; i < 7; i++) {
     //    fprintf(f, "%c", i);
     //}
     //fclose(f);
@@ -32,6 +32,13 @@ int main() {
     //}
     //fclose(f);
     //f = NULL;
+
+    // Тест на неправильные данные в 1 символе
+    //int flag = 0;
+    //flag = decompress("compress.txt", "decompress.txt");
+    //if (flag == 0) {
+    //    printf("BAD\n");
+    //}
 
     int flag = 0;
     flag = compress("data.txt", "compress.txt");
@@ -154,6 +161,9 @@ int decompress(char* filepath, char* filepath_new) {
             unsigned char _mask = 0;
             if (file_new) {
                 flag = fscanf(file, "%c", &flag_tail);
+                if (flag_tail != '1' && flag_tail != '0') {
+                    flag = -3;
+                }
                 while (flag > 0) {
                     mask = 128;
                     _mask = ~mask;
