@@ -47,9 +47,28 @@ int main() {
         if (flag == 1){
             printf("Good compress and decompress\n");
         }
-        else{
+        else if (flag == -1) {
+            printf("Error occured while closing file\n");
+        }
+        else if (flag == -2) {
+            printf("Error occured while removing file\n");
+        }
+        else if (flag == -3) {
+            printf("Error occured because input data is invalid\n");
+        }
+        else {
             printf("Error occured while decompressing file\n");
         }
+        
+    }
+    else if (flag == -1) {
+        printf("Error occured while closing file\n");
+    }
+    else if (flag == -2) {
+        printf("Error occured while removing file\n");
+    }
+    else if (flag == -3) {
+        printf("Error occured because input data is invalid\n");
     }
     else{
         printf("Error occured while compressing file\n");
