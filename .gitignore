@@ -436,3 +436,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+Lab_4/compress.txt
+
+Lab_4/decompress.txt
+
+Lab_4/data — копия.txt
